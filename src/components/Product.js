@@ -3,16 +3,25 @@ import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from "react-router-dom";
 export default function Product() {
 
+    function getHeader() {
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem("token")
+        }
+        return headers;
+    }
+    
+    function getBaseUrl() {
+        return "http://localhost:8081/";
+    }
 
     const [productData, setProductData] = useState([]);
-
-
 
 
     useEffect(() => {
         document.title = 'Products';
         if (productData) {
-            axios.get('http://localhost:8081/products/').then((response) => {
+            axios.get(getBaseUrl() + 'products', { headers: getHeader() }).then((response) => {
                 setProductData(response.data.data);
                 console.log(response.data.data);
             })

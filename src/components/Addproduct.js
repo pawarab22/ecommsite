@@ -1,9 +1,22 @@
 import axios from 'axios';
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router';
+import { toast } from 'react-toastify';
 
 export default function Addproduct() {
-    
+
+    function getHeader() {
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem("token")
+        }
+        return headers;
+    }
+
+    function getBaseUrl() {
+        return "http://localhost:8081/";
+    }
+
     const [file, setFile] = useState();
 
     const navigate = useNavigate();
@@ -16,55 +29,55 @@ export default function Addproduct() {
     });
     function save(e) {
         e.preventDefault();
+        
         let data = new FormData();
         data.append('productname', product.productname);
         data.append('description', product.description);
         data.append('productImg', file);
         data.append('price', product.price);
 
-        axios({
-            method: 'post',
-            url: 'http://localhost:8081/products',
-            data: data,
-            headers: {
-                "Content-Type": 'multipart/form-data'
-            }
-        }).then((response)=>{
+        axios.get(getBaseUrl() + 'products', { headers: getHeader() },).then((response) => {
             console.log(response.data.data);
-             navigate('/buynow');
+            navigate('/buynow');
 
-        });
+        })
+            .catch((err) => {
+                console.log(err);
+                console.log(err.response);
+                toast.error('error...!', err.response.data.error.message, { autoClose: 3000 },
+                    { position: toast.POSITION.TOP_RIGHT })
+            })
     }
 
-    function setProductData(e, file=false) {
+    function setProductData(e, file = false) {
         e.preventDefault();
-        if(file){
+        if (file) {
             console.log(e.target.files[0]);
             setFile(e.target.files[0]);
             setProduct({ ...product, [e.target.id]: e.target.value });
-        }else{
+        } else {
             setProduct({ ...product, [e.target.id]: e.target.value });
         }
     }
 
-  return (
-    <div>
-       <div className="container border">
+    return (
+        <div>
+            <div className="container border">
                 <h3 className='text-center text-info'>Add Product</h3>
 
                 <div className="col-lg-12">
                     <form >
-                       
+
 
                         <div className="form-group row">
                             <div className="col-lg-6">
                                 <label >Product Name : </label>
-                                <input type="text" className="form-control" name="productname" id='productname' value={product.productname}  onChange={(e) => { setProductData(e) }} />
+                                <input type="text" className="form-control" name="productname" id='productname' value={product.productname} onChange={(e) => { setProductData(e) }} />
                             </div>
 
                             <div className="col-lg-6">
                                 <label >Image File : </label>
-                                <input type="file" className="form-control" name="productImg" id='productImg' value={product.productImg}  onChange={(e) => { setProductData(e, true) }} />
+                                <input type="file" className="form-control" name="productImg" id='productImg' value={product.productImg} onChange={(e) => { setProductData(e, true) }} />
                             </div>
                         </div>
 
@@ -75,13 +88,13 @@ export default function Addproduct() {
                             </div>
                         </div>
 
-                       
-                        
-                       
+
+
+
                         <div className="form-group row">
                             <div className="col-lg-6">
                                 <label >Price : </label>
-                                <input type="text" className="form-control" name="price" value={product.price}  id='price' onChange={(e) => { setProductData(e) }} />
+                                <input type="text" className="form-control" name="price" value={product.price} id='price' onChange={(e) => { setProductData(e) }} />
                             </div>
 
                         </div>
@@ -94,6 +107,6 @@ export default function Addproduct() {
                     </form>
                 </div>
             </div>
-    </div>
-  )
+        </div>
+    )
 }

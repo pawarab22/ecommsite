@@ -1,9 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Home() {
+
+  function getHeader() {
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + localStorage.getItem("token")
+    }
+    return headers;
+  }
+
+  function getBaseUrl() {
+    return "http://localhost:8081/";
+  }
+
 
   const [password, setPassword] = useState("");
 
@@ -48,19 +63,39 @@ function Home() {
     handleValidation();
 
     if (username && password) {
-      axios.post('http://localhost:8081/authentication/login', {
+      axios.post(getBaseUrl() + 'authentication/login', {
         username: username,
         password: password
-      }).then((response) => {
+      }, { headers: getHeader() },).then((response) => {
+        console.log(response.data);
         if (response.data.status === "success") {
           navigate("/products");
         }
         else {
-          alert('invalid credentials...!');
+          toast.error('Invlid credentials...!', { autoClose: 3000 },
+            { position: toast.POSITION.TOP_RIGHT })
         }
       })
+
     }
   }
+
+  useEffect(() => {
+    document.title = 'Log In';
+
+    if (localStorage.getItem("token") == null)
+      localStorage.setItem("token", "abhishek");
+
+
+    axios.post(getBaseUrl() + "gettoken", { token: "abhishek" }, { headers: getHeader() }).then((result) => {
+      if (result.data.status === "success") {
+        localStorage.setItem("token", result.data.token);
+      }
+    }, (err) => {
+      console.log(err);
+    });
+
+  }, []);
 
   return (
     <>
@@ -70,9 +105,11 @@ function Home() {
           <div className="">
             <div className="row d-flex justify-content-center">
               <div className="col-md-4">
-                <form id="loginform" className='m-4' onSubmit={loginSubmit}>
+                <form id="loginform" className='m-4' >
                   <div className="form-group">
                     <label className='h6'>Username</label>
+                    <ToastContainer />
+
                     <input
                       type="username"
                       className="form-control"
@@ -101,7 +138,7 @@ function Home() {
                     </small>
                   </div>
                   <br />
-                  <button type="submit" className="btn btn-primary mb-3 ">
+                  <button onClick={(e) => { loginSubmit(e) }} className="btn btn-primary mb-3 ">
                     Log In
                   </button>
                 </form>

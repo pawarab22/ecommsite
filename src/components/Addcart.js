@@ -1,8 +1,23 @@
 import axios from 'axios';
 import React, { useState } from 'react'
-import { Form } from "react-bootstrap";
+import { Form, ToastContainer } from "react-bootstrap";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Link, useNavigate } from "react-router-dom";
 export default function Addcart() {
+
+  function getHeader() {
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + localStorage.getItem("token")
+    }
+    return headers;
+  }
+
+  function getBaseUrl() {
+    return "http://localhost:8081/";
+  }
+
   const navigate = useNavigate();
 
   const [shipp, setShip] = useState({
@@ -73,6 +88,7 @@ export default function Addcart() {
       cityMessage = "Please Enter Password";
       validated = false;
     }
+
     if (shipp.pincode === "") {
       pincodeMessage = "Please Enter mobile number";
       validated = false;
@@ -86,23 +102,37 @@ export default function Addcart() {
       addressMessage: addressMessage,
       cityMessage: cityMessage
     })
-    if (validated) {
+    try {
 
-      if (shipp) {
-        axios.post('http://localhost:8081/orderplaced/', {
-          name: shipp.name,
-          email: shipp.email,
-          mobileno: shipp.mobileno,
-          address: shipp.address,
-          pincode: shipp.pincode,
-          city: shipp.city
-        }).then((response) => {
-          if (response) {
-            navigate('/orderplaced');
-          }
-        });
+      if (validated) {
+
+        if (shipp) {
+          axios.post(getBaseUrl() + 'orderplaced/', {
+            name: shipp.name,
+            email: shipp.email,
+            mobileno: shipp.mobileno,
+            address: shipp.address,
+            pincode: shipp.pincode,
+            city: shipp.city
+          }, { headers: getHeader() },).then((response) => {
+
+
+
+            if (response) {
+
+              navigate('/orderplaced');
+
+            }
+          });
+        }
+
 
       }
+
+    }
+    catch (err) {
+      toast.error('error...!', err.response.data.error.message, { autoClose: 3000 },
+        { position: toast.POSITION.TOP_RIGHT })
     }
   }
 
@@ -120,6 +150,7 @@ export default function Addcart() {
 
                 <div className="row">
                   <div className="col-lg-3 ml-5">
+                    <ToastContainer />
 
                   </div>
                   <div className="col-lg-6">
@@ -131,7 +162,7 @@ export default function Addcart() {
                           className="form-control"
                           id="name"
                           placeholder="Enter Name" onChange={(e) => { setUserData(e) }}
-                          
+
                         />
                         <span className='text-danger'>{userValidation.nameMessage}</span>
                       </div>
@@ -143,7 +174,7 @@ export default function Addcart() {
                           className="form-control"
                           id="email" name='email'
                           placeholder="Enter email" onChange={(e) => { setUserData(e) }}
-                          
+
                         />
                         <span className='text-danger'>{userValidation.emailMessage}</span>
                       </div>
@@ -156,9 +187,9 @@ export default function Addcart() {
                           className="form-control" value={shipp.mobileno}
                           id="mobileno" name='mobileno'
                           placeholder="Enter Your Number" onChange={(e) => { setUserData(e) }}
-                          
+
                         />
-                         <span className='text-danger'>{userValidation.mobilenoMessage}</span>
+                        <span className='text-danger'>{userValidation.mobilenoMessage}</span>
                       </div>
                       <br />
 
@@ -169,9 +200,9 @@ export default function Addcart() {
                           className="form-control"
                           id="address" name='address' value={shipp.address}
                           placeholder="Enter Your Address" onChange={(e) => { setUserData(e) }}
-                          
+
                         />
-                         <span className='text-danger'>{userValidation.addressMessage}</span>
+                        <span className='text-danger'>{userValidation.addressMessage}</span>
                       </div>
                       <br />
 
@@ -182,9 +213,9 @@ export default function Addcart() {
                           className="form-control"
                           id="pincode" name='pincode' value={shipp.pincode}
                           placeholder="Enter Pincode" onChange={(e) => { setUserData(e) }}
-                          
+
                         />
-                         <span className='text-danger'>{userValidation.pincodeMessage}</span>
+                        <span className='text-danger'>{userValidation.pincodeMessage}</span>
                       </div>
                       <br />
                       <div className="form-group">
@@ -194,9 +225,9 @@ export default function Addcart() {
                           className="form-control"
                           id="city" name='city' value={shipp.city}
                           placeholder="Enter City" onChange={(e) => { setUserData(e) }}
-                          
+
                         />
-                         <span className='text-danger'>{userValidation.cityMessage}</span>
+                        <span className='text-danger'>{userValidation.cityMessage}</span>
                       </div>
                       <br />
 
