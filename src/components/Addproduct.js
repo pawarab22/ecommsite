@@ -27,6 +27,7 @@ export default function Addproduct() {
         productImg: '',
         price: '',
     });
+    
     function save(e) {
         e.preventDefault();
         
@@ -44,7 +45,7 @@ export default function Addproduct() {
             .catch((err) => {
                 console.log(err);
                 console.log(err.response);
-                toast.error('error...!', err.response.data.error.message, { autoClose: 3000 },
+                toast.error('error...!', { autoClose: 3000 },
                     { position: toast.POSITION.TOP_RIGHT })
             })
     }

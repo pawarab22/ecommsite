@@ -42,29 +42,28 @@ export default function Checkout() {
         });
 
     }
+
     function getData() {
-        try{
         axios.get(getBaseUrl() + 'products/' + id, { headers: getHeader() }).then((response) => {
             console.log(response.data.data);
-            setProductData({
-                ...product,
-                _id: response.data.data._id,
-                productname: response.data.data.productname,
-                productImg: response.data.data.productImg,
-                quantity: response.data.data.quantity,
-                description: response.data.data.description,
-                price: response.data.data.price,
-                total: response.data.data.total,
-            });
-            
+            if (response.data.data) {
+                setProductData({
+                    ...product,
+                    _id: response.data.data._id,
+                    productname: response.data.data.productname,
+                    productImg: response.data.data.productImg,
+                    quantity: response.data.data.quantity,
+                    description: response.data.data.description,
+                    price: response.data.data.price,
+                    total: response.data.data.total,
+                });
+            }
+
         });
     }
-    catch(err){
-        toast.error('error...!', err.response.data.error.message, { autoClose: 3000 },
-                    { position: toast.POSITION.TOP_RIGHT })
-    }
-        
-    }
+
+
+
 
 
 
@@ -76,23 +75,21 @@ export default function Checkout() {
 
         axios.get(getBaseUrl() + 'products/' + id, { headers: getHeader() }).then((response) => {
             console.log(response.data.data);
-            setProductData({
-                ...product,
-                _id: response.data.data._id,
-                productname: response.data.data.productname,
-                productImg: response.data.data.productImg,
-                quantity: response.data.data.quantity,
-                description: response.data.data.description,
-                price: response.data.data.price,
-                total: response.data.data.total,
-            });
+            if (response.data.data) {
+                setProductData({
+                    ...product,
+                    _id: response.data.data._id,
+                    productname: response.data.data.productname,
+                    productImg: response.data.data.productImg,
+                    quantity: response.data.data.quantity,
+                    description: response.data.data.description,
+                    price: response.data.data.price,
+                    total: response.data.data.total,
+                });
+            }
 
         })
-            .catch((err) => {
-                console.log(err);
-                console.log(err.response);
-                alert(err.response.data.error.message);
-            })
+
     }, []);
 
 
@@ -113,7 +110,7 @@ export default function Checkout() {
                             <div className="title mx-auto">
                                 <h4> Thank you for your order! </h4>
                             </div>
-                            <ToastContainer/>
+                            <ToastContainer />
                             <div className="main m-2"> <span id="sub-title">
                                 <p>   <b> Payment Summary   </b>   </p>
                             </span>

@@ -131,7 +131,7 @@ export default function Addcart() {
 
     }
     catch (err) {
-      toast.error('error...!', err.response.data.error.message, { autoClose: 3000 },
+      toast.error('error...!', { autoClose: 3000 },
         { position: toast.POSITION.TOP_RIGHT })
     }
   }
